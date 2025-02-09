@@ -1,64 +1,88 @@
-import { Link } from "react-router-dom";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function FormLogin() {
-  const inputElement = [
-    {
-      content: "Username",
-      id: "name",
-      type: "text",
-      placeholder: "Username",
-    },
-    {
-      content: "Password",
-      id: "password",
-      type: "password",
-      placeholder: "Password",
-    },
-  ];
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    // Tạo dữ liệu form dưới dạng x-www-form-urlencoded
+    const formData = new URLSearchParams();
+    formData.append('username', username);
+    formData.append('password', password);
+
+    try {
+      const response = await axios.post('http://localhost:5180/Auth/login', formData, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded', // Gửi dữ liệu với kiểu này
+        }
+      });
+
+      console.log('Login successful:', response.data);
+
+      // Lưu token vào localStorage hoặc bất kỳ nơi nào bạn cần lưu trữ
+      localStorage.setItem('token', response.data.Token);
+
+      // Điều hướng đến trang dashboard hoặc trang bạn muốn
+      navigate('/Header');
+    } catch (err) {
+      setError('Tên đăng nhập hoặc mật khẩu không chính xác.');
+      console.error('Login error:', err);
+    }
+  };
 
   return (
     <>
-      <form>
-        {inputElement.map((element, index) => (
-          <div className="" key={index}>
-            <label
-              htmlFor={element.id}
-              className="block text-sm font-medium text-gray-900"
-            >
-              {element.content}
-            </label>
-            <div className="mt-2 w-full mb-5">
-              <div className="flex items-center rounded-lg bg-white pl-3 outline outline-1 -outline-offset-1 outline-gray-300 focus-within:outline focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-600">
-                <input
-                  id={element.id}
-                  name={element.id}
-                  type={element.type}
-                  placeholder={element.placeholder}
-                  className="block w-full py-1.5 pl-1 pr-3 text-base text-gray-900 placeholder-gray-400 focus:outline-none sm:text-sm"
-                />
-              </div>
-            </div>
-          </div>
-        ))}
+      <form onSubmit={handleLogin}>
+        <div className="mb-5">
+          <label htmlFor="name" className="block text-sm font-medium text-gray-900">Username</label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            placeholder="Username"
+            className="mt-2 w-full p-2 border rounded"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </div>
+        
+        <div className="mb-5">
+          <label htmlFor="password" className="block text-sm font-medium text-gray-900">Password</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="Password"
+            className="mt-2 w-full p-2 border rounded"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+
+        {error && <div className="text-red-500 mb-5">{error}</div>} {/* Hiển thị lỗi nếu có */}
+
         <div className="flex justify-between">
           <div className="mb-5">
             <input type="checkbox" id="agree" />
-            <label htmlFor="agree" className=" text-gray-900 ml-2 text-[0.8rem]">
-              Remember me
-            </label>
+            <label htmlFor="agree" className="text-gray-900 ml-2 text-sm">Remember me</label>
           </div>
           <div>
-            <Link to="/forgot-password" className="hover:underline text-black text-[0.8rem]">
-              Forgot password?
-            </Link>
+            <a href="/forgot-password" className="hover:underline text-black text-sm">Forgot password?</a>
           </div>
         </div>
+
         <div className="mb-7 w-full">
           <button
             type="submit"
-            className="flex w-full justify-center bg-black px-3 py-1.5 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 hover:bg-white hover:text-black rounded-lg"
+            className="w-full py-2 bg-black text-white rounded-lg"
           >
-            Sign in
+            Login
           </button>
         </div>
       </form>
