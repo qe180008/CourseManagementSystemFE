@@ -30,9 +30,10 @@ function Regester() {
       });
 
       console.log('Registration successful:', response.data);
-
-      // Có thể thêm logic để điều hướng hoặc thông báo khi đăng ký thành công
+      
+      // thông báo khi đăng ký thành công và điều hướng đến trang Home
       alert('Đăng ký thành công!');
+      navigate('/');
     } catch (err) {
       setError('Đăng ký không thành công.');
       console.error('Registration error:', err);

@@ -25,11 +25,11 @@ function FormLogin() {
 
       console.log('Login successful:', response.data);
 
-      // Lưu token vào localStorage hoặc bất kỳ nơi nào bạn cần lưu trữ
+      // Lưu token vào localStorage
       localStorage.setItem('token', response.data.Token);
 
-      // Điều hướng đến trang dashboard hoặc trang bạn muốn
-      navigate('/Header');
+      // Điều hướng đến trang Home 
+      navigate('/');
     } catch (err) {
       setError('Tên đăng nhập hoặc mật khẩu không chính xác.');
       console.error('Login error:', err);
